@@ -46,10 +46,13 @@ public class SnakeView extends SurfaceView implements Runnable {
     private float downX, downY;
 
     private boolean isPaused = false;
+    private boolean isGameover = false;
+
     private RectF resumeButton;
     private RectF mainMenuButton;
     private RectF exitButton;
     private RectF pauseButton;
+    private RectF restartButton;
 
 
     public SnakeView(Context context) {
@@ -67,7 +70,7 @@ public class SnakeView extends SurfaceView implements Runnable {
     public void run() {
         while(running){
             long now = System.currentTimeMillis();
-            if(now - lastTick >= stepTime && !isPaused){
+            if(now - lastTick >= stepTime && !isPaused && !isGameover){
                 update();
                 lastTick = now;
             }
@@ -105,8 +108,16 @@ public class SnakeView extends SurfaceView implements Runnable {
                 break;
         }
 
-        newX = (newX + cols) % cols;
-        newY = (newY + rows) % rows;
+        // Check for collision with walls
+        if (newX < 0 || newX >= cols || newY < 0 || newY >= rows) {
+            //running = false;
+            isGameover = true;
+            isPaused = true;
+            resumeButton = null;
+            mainMenuButton = null;
+            exitButton = null;
+            return;
+        }
 
         snake.addFirst(new Point(newX, newY));
 
@@ -123,6 +134,7 @@ public class SnakeView extends SurfaceView implements Runnable {
                 snake.removeLast();
             }
         }
+
     }
 
 
@@ -171,9 +183,7 @@ public class SnakeView extends SurfaceView implements Runnable {
             canvas.drawRect(fruitLeft, fruitTop, fruitRight, fruitBottom, paint);
         }
 
-
-
-        if(isPaused){
+        if(isPaused && !isGameover){
             Paint overlayPaint = new Paint();
             overlayPaint.setColor(Color.argb(128, 0, 0, 0)); // semi-transparent black
             canvas.drawRect(0, 0, getWidth(), getHeight(), overlayPaint);
@@ -202,7 +212,34 @@ public class SnakeView extends SurfaceView implements Runnable {
             canvas.drawText("Exit", centerX, centerY + 320, paint);
 
         }
+
+        if (isGameover) {
+            Paint overlay = new Paint();
+            overlay.setColor(Color.argb(160, 0, 0, 0));
+            canvas.drawRect(0, 0, getWidth(), getHeight(), overlay);
+
+            Paint gameOverPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            gameOverPaint.setColor(Color.WHITE);
+            gameOverPaint.setTextSize(100);
+            gameOverPaint.setTextAlign(Paint.Align.CENTER);
+            canvas.drawText("Game Over", getWidth()/2f, getHeight()/2f - 120, gameOverPaint);
+
+            float cx = getWidth()/2f, cy = getHeight()/2f + 20;
+            restartButton = new RectF(cx - 200, cy - 80, cx + 200, cy + 20);
+
+            Paint btn = new Paint();
+            btn.setColor(Color.GRAY);
+            canvas.drawRoundRect(restartButton, 50, 50, btn);
+
+            gameOverPaint.setTextSize(60);
+            canvas.drawText("Restart", cx, cy - 15, gameOverPaint);
+        }
+
+
         holder.unlockCanvasAndPost(canvas);
+
+
+
     }
 
     public void incrementScore(){
@@ -296,32 +333,42 @@ public class SnakeView extends SurfaceView implements Runnable {
         float y = e.getY();
         switch (e.getAction()){
             case MotionEvent.ACTION_DOWN:
-                if(!isPaused && pauseButton != null && pauseButton.contains(x, y)) {
-                    isPaused = true; // Pause the game
+                // 0) klik na pauzu (iba ak nie je game over)
+                if (!isGameover && !isPaused && pauseButton != null && pauseButton.contains(x, y)) {
+                    isPaused = true;
                     return true;
                 }
 
-
-                if(isPaused) {
-                    if (resumeButton.contains(x, y)) {
-                        isPaused = false; // Toggle pause state
-                    } else if (mainMenuButton.contains(x, y)) {
-                        // Handle main menu action
-                        // For example, start MainMenuActivity
-                        Intent intent = new Intent(getContext(), MainMenuActivity.class);
-                        getContext().startActivity(intent);
-                    } else if (exitButton.contains(x, y)) {
-                        // Handle exit action
-                        ((MainActivity) getContext()).finish();
+                // 1) GAME OVER má prednosť
+                if (isGameover) {
+                    if (restartButton != null && restartButton.contains(x, y)) {
+                        restartGame();
+                        return true;
                     }
+                    return true; // klik mimo restartu počas game over
                 }
 
-                downX = x;
-                downY = y;
+                // 2) PAUZA (iba ak nie je game over)
+                if (isPaused) {
+                    if (resumeButton != null && resumeButton.contains(x, y)) { isPaused = false; return true; }
+                    if (mainMenuButton != null && mainMenuButton.contains(x, y)) {
+                        getContext().startActivity(new Intent(getContext(), MainMenuActivity.class));
+                        return true;
+                    }
+                    if (exitButton != null && exitButton.contains(x, y)) {
+                        ((MainActivity) getContext()).finish();
+                        return true;
+                    }
+                    return true;
+                }
+
+                // 3) začiatok swipu
+                downX = x; downY = y;
                 return true;
 
+
             case MotionEvent.ACTION_MOVE:
-                if(isPaused) return true; // Ignore moves while paused
+                if(isPaused || isGameover) return true; // Ignore moves while paused
                 float deltaX = e.getX() - downX;
                 float deltaY = e.getY() - downY;
                 if(Math.abs(deltaX) > Math.abs(deltaY)){
@@ -343,6 +390,25 @@ public class SnakeView extends SurfaceView implements Runnable {
         }
 
         return super.onTouchEvent(e);
+    }
+
+    public void restartGame(){
+            score = 0;
+            targetLength = 6;
+            snake.clear();
+            int snakeX = cols / 2;
+            int snakeY = rows / 2;
+            snake.add(new Point(snakeX, snakeY));
+            snake.add(new Point(snakeX - 1, snakeY));
+            snake.add(new Point(snakeX - 2, snakeY));
+            snake.add(new Point(snakeX - 3, snakeY));
+            snake.add(new Point(snakeX - 4, snakeY));
+            direction = Direction.RIGHT;
+            generateFruit();
+            isGameover = false;
+            isPaused = false;
+            lastTick = System.currentTimeMillis();
+
     }
 
 
