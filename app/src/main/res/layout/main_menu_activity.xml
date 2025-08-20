@@ -30,27 +30,29 @@
             android:layout_width="200dp"
             android:layout_marginTop="150dp"
             android:layout_height="wrap_content"
-            android:text="Štart" />
+            android:text="Štart"
+            android:backgroundTint="@color/green"/>
 
         <Button
             android:id="@+id/optionsButton"
             android:layout_width="200dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:layout_height="wrap_content"
             android:text="Možnosti" />
 
         <Button
             android:id="@+id/infoButton"
             android:layout_width="200dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:layout_height="wrap_content"
             android:text="Info" />
 
         <Button
             android:id="@+id/exitButton"
             android:layout_width="200dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/red"
             android:text="Koniec" />
 
 

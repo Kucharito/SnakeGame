@@ -20,6 +20,7 @@ public class SnakeView extends SurfaceView implements Runnable {
     private boolean running;
     private final SurfaceHolder holder;
     private Paint paint;
+    private Point fruit;
 
     private boolean gridReady = false;
     private boolean snakeInited = false;
@@ -30,6 +31,7 @@ public class SnakeView extends SurfaceView implements Runnable {
     private int rows = 28;
     private float cell;
     private float offsetX, offsetY;
+    private int score = 0;
 
     private final ArrayDeque<Point> snake = new ArrayDeque<>();
     private enum Direction {
@@ -57,6 +59,7 @@ public class SnakeView extends SurfaceView implements Runnable {
         setFocusable(true);
         setFocusableInTouchMode(true);
         setClickable(true);
+        generateFruit();
 
     }
 
@@ -107,10 +110,21 @@ public class SnakeView extends SurfaceView implements Runnable {
 
         snake.addFirst(new Point(newX, newY));
 
-        if(snake.size() > targetLength){
-            snake.removeLast();
+
+        if(newX == fruit.x && newY == fruit.y){
+            // Snake ate the fruit
+            targetLength++;
+            incrementScore();
+            generateFruit();
+
+        } else {
+            // Remove the last segment of the snake
+            if(snake.size() > targetLength){
+                snake.removeLast();
+            }
         }
     }
+
 
     private void draw() {
         if (!holder.getSurface().isValid()) return;
@@ -118,6 +132,12 @@ public class SnakeView extends SurfaceView implements Runnable {
         if (canvas == null) return;
 
         canvas.drawColor(Color.BLACK);
+
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(50);
+        paint.setTextAlign(Paint.Align.LEFT);
+        canvas.drawText("Score: " + score, 20, 50, paint);
+        //incrementScore();
 
 
         if(pauseButton != null){
@@ -140,6 +160,18 @@ public class SnakeView extends SurfaceView implements Runnable {
             float bottom = top  + cell - 2 * pad;
             canvas.drawRect(left, top, right, bottom, paint);
         }
+
+        // fruit
+        if(fruit != null){
+            paint.setColor(Color.RED); // farba ovocia
+            float fruitLeft   = offsetX + fruit.x * cell + pad;
+            float fruitTop    = offsetY + fruit.y * cell + pad;
+            float fruitRight  = fruitLeft + cell - 2 * pad;
+            float fruitBottom = fruitTop  + cell - 2 * pad;
+            canvas.drawRect(fruitLeft, fruitTop, fruitRight, fruitBottom, paint);
+        }
+
+
 
         if(isPaused){
             Paint overlayPaint = new Paint();
@@ -165,13 +197,42 @@ public class SnakeView extends SurfaceView implements Runnable {
 
             paint.setColor(Color.WHITE);
             paint.setTextSize(60);
-            canvas.drawText("Resume", centerX, centerY - 100, paint);
-            canvas.drawText("Main Menu", centerX, centerY + 100, paint);
-            canvas.drawText("Exit", centerX, centerY + 300, paint);
+            canvas.drawText("Resume", centerX, centerY - 80, paint);
+            canvas.drawText("Main Menu", centerX, centerY + 120, paint);
+            canvas.drawText("Exit", centerX, centerY + 320, paint);
 
         }
         holder.unlockCanvasAndPost(canvas);
     }
+
+    public void incrementScore(){
+        if(isSnake(fruit.x, fruit.y)){
+            score = score + 10;
+        }
+    }
+
+    public void generateFruit(){
+        Random random = new Random();
+        int fruitX = random.nextInt(cols);
+        int fruitY = random.nextInt(rows);
+
+        // Ensure the fruit does not spawn on the snake
+        while (isSnake(fruitX, fruitY)) {
+            fruitX = random.nextInt(cols);
+            fruitY = random.nextInt(rows);
+        }
+        fruit = new Point(fruitX, fruitY);
+    }
+
+    private boolean isSnake(int x, int y){
+        for (Point p : snake) {
+            if (p.x == x && p.y == y) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 
     public void resume(){
@@ -280,9 +341,6 @@ public class SnakeView extends SurfaceView implements Runnable {
             case MotionEvent.ACTION_UP:
                 return true;
         }
-
-
-
 
         return super.onTouchEvent(e);
     }

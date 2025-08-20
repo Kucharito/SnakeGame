@@ -1,6 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="1dp"
+        tools:ignore="MissingConstraints">
+
+        <TextView
+            android:id="@+id/howToPlayText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:layout_marginTop="50dp"
+            android:lineSpacingExtra="4dp"
+            android:scrollbars="vertical"
+            android:scrollHorizontally="false"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:ellipsize="none"
+            android:overScrollMode="always"
+            android:text="📖 Ako hrať Snake\n\n
+Had sa po spustení hry pohybuje automaticky.\n\n
+Pohyb ovládaš potiahnutím prsta po obrazovke:\n
+- Potiahni doprava → had ide doprava\n
+- Potiahni doľava → had ide doľava\n
+- Potiahni nahor → had ide hore\n
+- Potiahni nadol → had ide dole\n\n
+Klepnutím na tlačidlo II v pravom hornom rohu hru pozastavíš.\n\n
+V pauzovom menu môžeš zvoliť:\n
+- Resume – pokračovať v hre\n
+- Main Menu – návrat do hlavného menu\n
+- Exit – ukončenie hry\n\n
+🎯 Cieľ hry: zbieraj jedlo, aby had rástol, ale vyhni sa narážaniu do vlastného tela." />
+
+
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Späť"
+            android:layout_marginTop="50dp"/>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
