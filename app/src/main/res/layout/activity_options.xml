@@ -7,17 +7,78 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp"
         android:gravity="center"
-        tools:ignore="MissingConstraints">
+        tools:layout_editor_absoluteY="1dp">
+
+        <TextView
+            android:id="@+id/farbaHada"
+            android:layout_width="200dp"
+            android:textSize="20dp"
+            android:textAlignment="center"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Farba hada" />
+
+        <Button
+            android:id="@+id/buttonRed"
+            android:layout_width="200dp"
+            android:layout_marginTop="50dp"
+            android:layout_height="wrap_content"
+            android:text="Červená" />
+
+        <Button
+            android:id="@+id/buttonWhite"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Biela" />
+
+        <Button
+            android:id="@+id/buttonBlue"
+            android:layout_width="200dp"
+            android:layout_marginTop="20dp"
+            android:layout_height="wrap_content"
+            android:text="Modrá" />
+
+
+        <TextView
+            android:id="@+id/farbaOvocia"
+            android:layout_width="200dp"
+            android:textSize="20dp"
+            android:textAlignment="center"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Farba ovocia" />
+
+        <Button
+            android:id="@+id/buttonFruitRed"
+            android:layout_width="200dp"
+            android:layout_marginTop="50dp"
+            android:layout_height="wrap_content"
+            android:text="Červené" />
+
+        <Button
+            android:id="@+id/buttonFruitWhite"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Biele" />
+        <Button
+            android:id="@+id/buttonFruitBlue"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Modré" />
 
         <Button
             android:id="@+id/backButton"
             android:layout_width="200dp"
+            android:layout_marginTop="50dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="150dp"
             android:text="Späť" />
+
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,6 +2,7 @@ package com.example.snake;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -38,7 +39,7 @@ public class SnakeView extends SurfaceView implements Runnable {
         UP, DOWN, LEFT, RIGHT
     }
     private Direction direction = Direction.RIGHT;
-    private int targetLength = 6;
+    private int targetLength = 2;
 
     private long stepTime = 140;
     private long lastTick = 0;
@@ -47,6 +48,8 @@ public class SnakeView extends SurfaceView implements Runnable {
 
     private boolean isPaused = false;
     private boolean isGameover = false;
+
+    private int highScore = 0;
 
     private RectF resumeButton;
     private RectF mainMenuButton;
@@ -64,6 +67,20 @@ public class SnakeView extends SurfaceView implements Runnable {
         setClickable(true);
         generateFruit();
 
+        SharedPreferences sharedPreferences = context.getSharedPreferences("SnakePrefs", Context.MODE_PRIVATE);
+        highScore = sharedPreferences.getInt("highScore", 0);
+
+
+    }
+
+    public void updateHighScore(){
+        if(score > highScore){
+            highScore = score;
+            SharedPreferences sharedPreferences = getContext().getSharedPreferences("SnakePrefs", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt("highScore", highScore);
+            editor.apply();
+        }
     }
 
     @Override
@@ -119,6 +136,9 @@ public class SnakeView extends SurfaceView implements Runnable {
             return;
         }
 
+
+        int biteIndex = indexOfCellInSnake(newX, newY);
+
         snake.addFirst(new Point(newX, newY));
 
 
@@ -128,8 +148,21 @@ public class SnakeView extends SurfaceView implements Runnable {
             incrementScore();
             generateFruit();
 
-        } else {
-            // Remove the last segment of the snake
+        }
+
+        if(biteIndex !=-1){
+            int newLen = biteIndex + 1;
+            targetLength = newLen;
+            while(snake.size()> newLen){
+                snake.removeLast();
+                if(snake.size() > 1){
+                    score = targetLength * 10;
+                    updateHighScore();
+                }
+
+            }
+        }
+        else{
             if(snake.size() > targetLength){
                 snake.removeLast();
             }
@@ -151,6 +184,38 @@ public class SnakeView extends SurfaceView implements Runnable {
         canvas.drawText("Score: " + score, 20, 50, paint);
         //incrementScore();
 
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("SnakePrefs", Context.MODE_PRIVATE);
+        String snakeColor = sharedPreferences.getString("snake_color", "green");
+
+        if(snake != null){
+            switch (snakeColor) {
+                case "white":
+                    paint.setColor(Color.WHITE);
+                    break;
+                case "red":
+                    paint.setColor(Color.RED);
+                    break;
+                case "blue":
+                    paint.setColor(Color.BLUE);
+                    break;
+                default:
+                    paint.setColor(Color.GREEN); // Default color
+            }
+        }
+
+
+        paint.setStyle(Paint.Style.FILL);
+        //paint.setColor(Color.GREEN);   // farba hada
+        float pad = 3f;
+        for (Point p : snake) {
+            float left   = offsetX + p.x * cell + pad;
+            float top    = offsetY + p.y * cell + pad;
+            float right  = left + cell - 2 * pad;
+            float bottom = top  + cell - 2 * pad;
+            canvas.drawRect(left, top, right, bottom, paint);
+        }
+
+
 
         if(pauseButton != null){
             paint.setColor(Color.GRAY);
@@ -162,26 +227,32 @@ public class SnakeView extends SurfaceView implements Runnable {
         }
 
         // --- had ---
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(Color.GREEN);   // farba hada
-        float pad = 3f;
-        for (Point p : snake) {
-            float left   = offsetX + p.x * cell + pad;
-            float top    = offsetY + p.y * cell + pad;
-            float right  = left + cell - 2 * pad;
-            float bottom = top  + cell - 2 * pad;
-            canvas.drawRect(left, top, right, bottom, paint);
+
+        if(fruit != null){
+            String fruitColor = sharedPreferences.getString("fruit_color", "red");
+            switch (fruitColor) {
+                case "white":
+                    paint.setColor(Color.WHITE);
+                    break;
+                case "red":
+                    paint.setColor(Color.RED);
+                    break;
+                case "blue":
+                    paint.setColor(Color.BLUE);
+                    break;
+                default:
+                    paint.setColor(Color.RED); // Default color
+            }
         }
 
-        // fruit
-        if(fruit != null){
-            paint.setColor(Color.RED); // farba ovocia
-            float fruitLeft   = offsetX + fruit.x * cell + pad;
-            float fruitTop    = offsetY + fruit.y * cell + pad;
-            float fruitRight  = fruitLeft + cell - 2 * pad;
-            float fruitBottom = fruitTop  + cell - 2 * pad;
-            canvas.drawRect(fruitLeft, fruitTop, fruitRight, fruitBottom, paint);
-        }
+        //paint.setColor(Color.RED); // farba ovocia
+        float fruitLeft   = offsetX + fruit.x * cell + pad;
+        float fruitTop    = offsetY + fruit.y * cell + pad;
+        float fruitRight  = fruitLeft + cell - 2 * pad;
+        float fruitBottom = fruitTop  + cell - 2 * pad;
+        canvas.drawRect(fruitLeft, fruitTop, fruitRight, fruitBottom, paint);
+
+
 
         if(isPaused && !isGameover){
             Paint overlayPaint = new Paint();
@@ -222,17 +293,24 @@ public class SnakeView extends SurfaceView implements Runnable {
             gameOverPaint.setColor(Color.WHITE);
             gameOverPaint.setTextSize(100);
             gameOverPaint.setTextAlign(Paint.Align.CENTER);
-            canvas.drawText("Game Over", getWidth()/2f, getHeight()/2f - 120, gameOverPaint);
+            canvas.drawText("Game Over", getWidth()/2f, getHeight()/2f - 250, gameOverPaint);
 
             float cx = getWidth()/2f, cy = getHeight()/2f + 20;
             restartButton = new RectF(cx - 200, cy - 80, cx + 200, cy + 20);
+            mainMenuButton = new RectF(cx - 200, cy + 120, cx + 200, cy + 220);
+
 
             Paint btn = new Paint();
             btn.setColor(Color.GRAY);
             canvas.drawRoundRect(restartButton, 50, 50, btn);
+            canvas.drawRoundRect(mainMenuButton, 50, 50, btn);
 
             gameOverPaint.setTextSize(60);
-            canvas.drawText("Restart", cx, cy - 15, gameOverPaint);
+            canvas.drawText("Restart", cx, cy - 5, gameOverPaint);
+            canvas.drawText("Main Menu", cx, cy + 190, gameOverPaint);
+
+            gameOverPaint.setTextSize(80);
+            canvas.drawText("High Score: " + highScore, getWidth()/2f, getHeight()/2f - 130, gameOverPaint);
         }
 
 
@@ -245,6 +323,7 @@ public class SnakeView extends SurfaceView implements Runnable {
     public void incrementScore(){
         if(isSnake(fruit.x, fruit.y)){
             score = score + 10;
+            updateHighScore();
         }
     }
 
@@ -268,6 +347,17 @@ public class SnakeView extends SurfaceView implements Runnable {
             }
         }
         return false;
+    }
+
+    private int indexOfCellInSnake(int x, int y){
+        int i=0;
+        for (Point p:snake){
+            if(p.x == x && p.y == y){
+                return i;
+            }
+            i++;
+        }
+        return -1;
     }
 
 
@@ -312,10 +402,10 @@ public class SnakeView extends SurfaceView implements Runnable {
             int snakeX = cols / 2;
             int snakeY = rows / 2;
             snake.add(new Point(snakeX, snakeY));
-            snake.add(new Point(snakeX - 1, snakeY));
+            /*snake.add(new Point(snakeX - 1, snakeY));
             snake.add(new Point(snakeX - 2, snakeY));
             snake.add(new Point(snakeX - 3, snakeY));
-            snake.add(new Point(snakeX - 4, snakeY));
+            snake.add(new Point(snakeX - 4, snakeY));*/
             snakeInited = true;
         }
         float buttonSize = 100; // Adjust size as needed
@@ -343,6 +433,10 @@ public class SnakeView extends SurfaceView implements Runnable {
                 if (isGameover) {
                     if (restartButton != null && restartButton.contains(x, y)) {
                         restartGame();
+                        return true;
+                    }
+                    if (mainMenuButton != null && mainMenuButton.contains(x, y)) {
+                        getContext().startActivity(new Intent(getContext(), MainMenuActivity.class));
                         return true;
                     }
                     return true; // klik mimo restartu počas game over
@@ -394,15 +488,15 @@ public class SnakeView extends SurfaceView implements Runnable {
 
     public void restartGame(){
             score = 0;
-            targetLength = 6;
+            targetLength = 2;
             snake.clear();
             int snakeX = cols / 2;
             int snakeY = rows / 2;
             snake.add(new Point(snakeX, snakeY));
-            snake.add(new Point(snakeX - 1, snakeY));
+            /*snake.add(new Point(snakeX - 1, snakeY));
             snake.add(new Point(snakeX - 2, snakeY));
             snake.add(new Point(snakeX - 3, snakeY));
-            snake.add(new Point(snakeX - 4, snakeY));
+            snake.add(new Point(snakeX - 4, snakeY));*/
             direction = Direction.RIGHT;
             generateFruit();
             isGameover = false;
