@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Snake</string>
+    <string name="start">Štart</string>
+    <string name="options">Možnosti</string>
+    <string name="game_info">Info</string>
+    <string name="exit">Koniec</string>
+    <string name="snake_color">Farba hada</string>
+    <string name="red">Červená</string>
+    <string name="white">Biela</string>
+    <string name="blue">Modrá</string>
+    <string name="fruit_color">Farba ovocia</string>
+    <string name="back_button">Späť</string>
+    <string name="game_over">Koniec hry</string>
+    <string name="high_score">Top skóre: </string>
+    <string name="restart_button">Reštart</string>
+    <string name="main_menu">Hlavné menu</string>
+    <string name="resume">Pokračovať</string>
+    <string name="score">Skóre: </string>
+    <string name="info_text">📖 Ako hrať Snake\n\n
+Had sa po spustení hry pohybuje automaticky.\n\n
+👉 Pohyb ovládaš potiahnutím prsta po obrazovke:\n
+- Potiahni doprava → had ide doprava\n
+- Potiahni doľava → had ide doľava\n
+- Potiahni nahor → had ide hore\n
+- Potiahni nadol → had ide dole\n\n
+⏸️ Klepnutím na tlačidlo II v pravom hornom rohu hru pozastavíš.\n\n
+V pauzovom menu môžeš zvoliť:\n
+- Resume – pokračovať v hre\n
+- Main Menu – návrat do hlavného menu\n
+- Exit – ukončenie hry\n\n
+🧱 Steny: ihrisko má pevné okraje – ak had narazí do steny, hra sa končí.\n\n
+🐍 Had a jeho telo:\n
+- Keď zješ ovocie, had vyrastie a získaš body.\n
+- Ak had prejde cez seba, odhryzne si vlastný chvost → skráti sa a zníži sa ti skóre.\n\n
+🎯 Cieľ hry: zbieraj jedlo, aby had rástol a získaval body, ale vyhni sa stenám a vlastnému telu!\n" </string>
+
+
+
+</resources>

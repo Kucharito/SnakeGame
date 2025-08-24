@@ -181,7 +181,7 @@ public class SnakeView extends SurfaceView implements Runnable {
         paint.setColor(Color.WHITE);
         paint.setTextSize(50);
         paint.setTextAlign(Paint.Align.LEFT);
-        canvas.drawText("Score: " + score, 20, 50, paint);
+        canvas.drawText(getContext().getString(R.string.score) + score, 20, 50, paint);
         //incrementScore();
 
         SharedPreferences sharedPreferences = getContext().getSharedPreferences("SnakePrefs", Context.MODE_PRIVATE);
@@ -278,9 +278,9 @@ public class SnakeView extends SurfaceView implements Runnable {
 
             paint.setColor(Color.WHITE);
             paint.setTextSize(60);
-            canvas.drawText("Resume", centerX, centerY - 80, paint);
-            canvas.drawText("Main Menu", centerX, centerY + 120, paint);
-            canvas.drawText("Exit", centerX, centerY + 320, paint);
+            canvas.drawText(getContext().getString(R.string.resume), centerX, centerY - 80, paint);
+            canvas.drawText(getContext().getString(R.string.main_menu), centerX, centerY + 120, paint);
+            canvas.drawText(getContext().getString(R.string.exit), centerX, centerY + 320, paint);
 
         }
 
@@ -293,7 +293,7 @@ public class SnakeView extends SurfaceView implements Runnable {
             gameOverPaint.setColor(Color.WHITE);
             gameOverPaint.setTextSize(100);
             gameOverPaint.setTextAlign(Paint.Align.CENTER);
-            canvas.drawText("Game Over", getWidth()/2f, getHeight()/2f - 250, gameOverPaint);
+            canvas.drawText(getContext().getString(R.string.game_over), getWidth()/2f, getHeight()/2f - 250, gameOverPaint);
 
             float cx = getWidth()/2f, cy = getHeight()/2f + 20;
             restartButton = new RectF(cx - 200, cy - 80, cx + 200, cy + 20);
@@ -306,11 +306,11 @@ public class SnakeView extends SurfaceView implements Runnable {
             canvas.drawRoundRect(mainMenuButton, 50, 50, btn);
 
             gameOverPaint.setTextSize(60);
-            canvas.drawText("Restart", cx, cy - 5, gameOverPaint);
-            canvas.drawText("Main Menu", cx, cy + 190, gameOverPaint);
+            canvas.drawText(getContext().getString(R.string.restart_button), cx, cy - 5, gameOverPaint);
+            canvas.drawText(getContext().getString(R.string.main_menu), cx, cy + 190, gameOverPaint);
 
             gameOverPaint.setTextSize(80);
-            canvas.drawText("High Score: " + highScore, getWidth()/2f, getHeight()/2f - 130, gameOverPaint);
+            canvas.drawText(getContext().getString(R.string.high_score) + highScore, getWidth()/2f, getHeight()/2f - 130, gameOverPaint);
         }
 
 

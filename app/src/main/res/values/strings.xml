@@ -1,3 +1,36 @@
 <resources>
     <string name="app_name">Snake</string>
+    <string name="start">Start</string>
+    <string name="options">Options</string>
+    <string name="game_info">Info</string>
+    <string name="exit">Exit</string>
+    <string name="snake_color">Snake Color</string>
+    <string name="red">Red</string>
+    <string name="white">White</string>
+    <string name="blue">Blue</string>
+    <string name="fruit_color">Fruit Color</string>
+    <string name="back_button">Back</string>
+    <string name="game_over">Game Over</string>
+    <string name="high_score">High Score: </string>
+    <string name="restart_button">Restart</string>
+    <string name="main_menu">Main Menu</string>
+    <string name="resume">Resume</string>
+    <string name="score">Score: </string>
+    <string name="info_text">📖 How to Play Snake\n\n
+        The snake moves automatically when the game starts.\n\n
+        👉 Control the movement by swiping your finger across the screen:\n
+        - Swipe right → snake moves right\n
+        - Swipe left → snake moves left\n
+        - Swipe up → snake moves up\n
+        - Swipe down → snake moves down\n\n
+        ⏸️ Tap the II button in the top right corner to pause the game.\n\n
+        In the pause menu, you can choose:\n
+        - Resume – continue playing\n
+        - Main Menu – return to the main menu\n
+        - Exit – quit the game\n\n
+        🧱 Walls: the play area has solid edges – if the snake hits a wall, the game ends.\n\n
+        🐍 Snake and its body:\n
+        - Eating fruit makes the snake grow and earns you points.\n
+        - If the snake crosses itself, it bites its own tail → it shortens and your score decreases.\n\n
+        🎯 Game objective: collect food to make the snake grow and score points, but avoid walls and its own body!\n</string>
 </resources>
