@@ -8,6 +8,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
+import android.media.AudioAttributes;
+import android.media.SoundPool;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -56,7 +58,9 @@ public class SnakeView extends SurfaceView implements Runnable {
     private RectF exitButton;
     private RectF pauseButton;
     private RectF restartButton;
-
+    private SoundPool soundPool;
+    private int soundFruitEaten;
+    private boolean soundsReady = false;
 
     public SnakeView(Context context) {
         super(context);
@@ -70,7 +74,30 @@ public class SnakeView extends SurfaceView implements Runnable {
         SharedPreferences sharedPreferences = context.getSharedPreferences("SnakePrefs", Context.MODE_PRIVATE);
         highScore = sharedPreferences.getInt("highScore", 0);
 
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_GAME)
+                .build();
 
+        soundPool = new SoundPool.Builder()
+                .setMaxStreams(4)
+                .setAudioAttributes(audioAttributes)
+                .build();
+
+        soundFruitEaten = soundPool.load(context, R.raw.bite, 1);
+
+        soundPool.setOnLoadCompleteListener((soundPool, sampleId, status) -> {
+            if (status == 0) {
+                soundsReady = true;
+            }
+        });
+
+    }
+
+    private void playHit(){
+        if(soundsReady) {
+            soundPool.play(soundFruitEaten, 1, 1, 0, 0, 1);
+        }
     }
 
     public void updateHighScore(){
@@ -147,6 +174,7 @@ public class SnakeView extends SurfaceView implements Runnable {
             targetLength++;
             incrementScore();
             generateFruit();
+            playHit();
 
         }
 
